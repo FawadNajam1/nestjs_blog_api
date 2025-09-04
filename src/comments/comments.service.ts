@@ -38,6 +38,11 @@ export class CommentsService {
             relations: ['author'],
             order: {createdAt: 'ASC'}
         });
+
+        if(allComments.length === 0) {
+            throw new NotFoundException('No comment found on the given post.');
+        }
+        
         return allComments;
     }
 }
