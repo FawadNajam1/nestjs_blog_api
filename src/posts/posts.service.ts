@@ -2,22 +2,37 @@ import { ForbiddenException, Injectable, NotFoundException, UnauthorizedExceptio
 import { InjectRepository } from '@nestjs/typeorm';
 import { Post } from './Entity/post.entity';
 import { Repository } from 'typeorm';
+import { User } from 'src/users/entity/user.entity';
 
 @Injectable()
 export class PostsService {
-    constructor(@InjectRepository(Post) private repo: Repository<Post>) {}
+    constructor(
+        @InjectRepository(Post)
+        private postRepo: Repository<Post>,
 
-    createPost(title: string, content: string, author: any) {
-        const post = this.repo.create({title, content, author});
-        return this.repo.save(post);
+        @InjectRepository(User)
+        private userRepo: Repository<Post>
+    ) {}
+
+    async createPost(title: string, content: string, authorId: number) {
+        const author = await this.userRepo.findOne({ where: {id: authorId} });
+        if (!author) {
+        throw new NotFoundException('Author not found');
+    }
+        const post = this.postRepo.create({title, content, author});
+        const savedPost = await this.postRepo.save(post);
+        return {
+            message: "Post Created Successfully.",
+            data: savedPost
+        };
     }
 
     findAll() {
-        return this.repo.find({relations: ['author']});
+        return this.postRepo.find({relations: ['author']});
     }
 
     async findById(id: number) {
-        const post = await this.repo.findOne({where: {id}, relations: ['author']});
+        const post = await this.postRepo.findOne({where: {id}, relations: ['author']});
 
         if(!post) {
             throw new NotFoundException('No post found against the given id.');
@@ -37,7 +52,7 @@ export class PostsService {
             throw new ForbiddenException('You are not allowed to delete this post');
         }
 
-        await this.repo.remove(post);
+        await this.postRepo.remove(post);
         return {
             message: "Post deleted successfully."
         }
@@ -54,11 +69,12 @@ export class PostsService {
             throw new ForbiddenException('You are not allowed to update this post.');
         }
 
-        const data = this.repo.merge(post, body);
-        const updatedPost = await this.repo.save(data);
+        const data = this.postRepo.merge(post, body);
+        const updatedPost = await this.postRepo.save(data);
 
         return {
-            message: "Post updated successfully."
+            message: "Post updated successfully.",
+            data: updatedPost
         }
     }
 }

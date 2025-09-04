@@ -9,9 +9,10 @@ export class PostsController {
     constructor(private postsService: PostsService) { }
 
     @UseGuards(JwtAuthGuard)
+    @UseInterceptors(customInterceptor)
     @Post()
     createPost(@Body() postsDto: PostsDto, @Request() req) {
-        return this.postsService.createPost(postsDto.title, postsDto.content, { id: req.user.sub })
+        return this.postsService.createPost(postsDto.title, postsDto.content, req.user.sub)
     }
 
     @UseInterceptors(customInterceptor) //used to hide user password in the response
@@ -20,6 +21,7 @@ export class PostsController {
         return this.postsService.findAll();
     }
 
+    @UseInterceptors(customInterceptor)
     @Get(':id')
     findOne(@Param('id') id: string) {
         return this.postsService.findById(+id);
