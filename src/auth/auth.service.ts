@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as argon2 from 'argon2';
@@ -9,6 +9,9 @@ export class AuthService {
 
     async validateUser(email: string, password: string) {
         const user = await this.usersService.findByEmail(email);
+        if(!user) {
+            throw new NotFoundException(`User with email ${email} does not exist.`);
+        }
         if(user && await argon2.verify(user.password, password)) {
             const {password, ...userData} = user;
             return userData;

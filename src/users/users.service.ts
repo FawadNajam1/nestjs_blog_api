@@ -14,7 +14,10 @@ export class UsersService {
   ) {}
 
   findByEmail(email: string) {
-    return this.repo.findOne({ where: { email } });
+    return this.repo.findOne({
+      where: { email },
+      relations: ['posts', 'comments', 'likes']
+    });
   }
 
   async createUser(email: string, password: string) {
