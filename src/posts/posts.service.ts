@@ -27,8 +27,8 @@ export class PostsService {
         };
     }
 
-    findAll() {
-        return this.postRepo.find({relations: ['author']});
+    async findAll() {
+        return await this.postRepo.find({relations: ['author']});
     }
 
     async findById(id: number) {
