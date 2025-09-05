@@ -16,7 +16,7 @@ export class LikesService {
         private postsRepo: Repository<Post>,
 
         @InjectRepository(Comment)
-        private commentsRepo: Repository<Post>
+        private commentsRepo: Repository<Comment>
     ) {}
 
     async likePost(id: number, user: any)  {
