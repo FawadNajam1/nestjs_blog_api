@@ -1,9 +1,10 @@
-import { Controller, Post as HttpPost, Body, UseGuards, Request, Get, Param, Post, Delete, Patch, UseInterceptors } from '@nestjs/common';
+import { Controller, Post as HttpPost, Body, UseGuards, Request, Get, Param, Post, Delete, Patch, UseInterceptors, Query } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PostsDto } from './dto/posts.dto';
 import { customInterceptor } from 'src/interceptors/custom.interceptor';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -19,8 +20,8 @@ export class PostsController {
 
     @UseInterceptors(customInterceptor) //used to hide user password in the response
     @Get()
-    findAll() {
-        return this.postsService.findAll();
+    findAll(@Query() paginationDto: PaginationDto) {
+        return this.postsService.findAll(paginationDto);
     }
 
     @UseInterceptors(customInterceptor)
