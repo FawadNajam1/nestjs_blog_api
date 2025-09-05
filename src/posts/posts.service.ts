@@ -11,7 +11,7 @@ export class PostsService {
         private postRepo: Repository<Post>,
 
         @InjectRepository(User)
-        private userRepo: Repository<Post>
+        private userRepo: Repository<User>
     ) {}
 
     async createPost(title: string, content: string, authorId: number) {
