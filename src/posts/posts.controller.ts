@@ -3,6 +3,7 @@ import { PostsService } from './posts.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PostsDto } from './dto/posts.dto';
 import { customInterceptor } from 'src/interceptors/custom.interceptor';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('posts')
 export class PostsController {
@@ -10,6 +11,7 @@ export class PostsController {
 
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(customInterceptor)
+    @ApiBearerAuth('access_token') //For swagger
     @Post()
     createPost(@Body() postsDto: PostsDto, @Request() req) {
         return this.postsService.createPost(postsDto.title, postsDto.content, req.user.sub)
@@ -28,17 +30,19 @@ export class PostsController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Delete(':id')
-    async remove(@Param('id') id: string, @Request() req) {
-        const userId = req.user.sub;
-        return this.postsService.remove(+id, userId);
-    }
-
-    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access_token')
     @Patch(':id')
     async update(@Body() postsDto: PostsDto, @Param('id') id: string, @Request() req) {
         // console.log(postsDto);
         const userId = req.user.sub;
         return this.postsService.update(+id, userId, postsDto);
+    }
+    
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth('access_token')
+    @Delete(':id')
+    async remove(@Param('id') id: string, @Request() req) {
+        const userId = req.user.sub;
+        return this.postsService.remove(+id, userId);
     }
 }
