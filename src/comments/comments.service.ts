@@ -29,7 +29,9 @@ export class CommentsService {
             author: user
         });
 
-        return this.commentRepo.save(comment);
+        const savedComment = await this.commentRepo.save(comment);
+
+        return savedComment;
     }
 
     async findCommentsByPost(postId: number): Promise<Comment[]> {
