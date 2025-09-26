@@ -12,6 +12,7 @@ import { CommentsModule } from './comments/comments.module';
 import envValidation from './config/env.validation';
 import { getPostgresConfig, initializePostgresConnection } from './config/database.config';
 import { LikesModule } from './likes/likes.module';
+import { TestExceptionController } from './test-exception.controller';
 
 @Module({
   imports: [
@@ -32,7 +33,7 @@ import { LikesModule } from './likes/likes.module';
     CommentsModule,
     LikesModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, TestExceptionController],
   providers: [AppService],
 })
 export class AppModule implements OnModuleInit {
